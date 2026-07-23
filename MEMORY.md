@@ -8,7 +8,11 @@ NinjaScript addon for NinjaTrader **version 8**. Built by a coordinated team of 
 
 ## Agent roster (Claude Code subagents, `.claude/agents/*.md`)
 
-_None defined yet. The user will provide each agent's skill/role one at a time. As each is added, record here: name, responsibilities, tools/access, and how it hands off to the others._
+- **nt8-researcher** - General NinjaScript/NinjaTrader 8 API, syntax, and conceptual research. Consults official NT docs (developer.ninjatrader.com/docs/desktop/ninjascript_editor_overview, ninjatrader.com/support/helpguides/nt8) and forums/GitHub instead of guessing from memory. Read-only (Read, Grep, Glob, WebFetch, WebSearch) - reports findings back for the main session to record, does not edit MEMORY.md/CLAUDE.md itself.
+- **compile-error-fixer** - Takes a specific compiler error + code, researches the confirmed root cause against the same NT8 sources, and applies the fix directly. Tools: Read, Grep, Glob, Edit, Bash, WebFetch, WebSearch.
+- **session-logger** - Writes/appends the dated Log entries in this file (and updates the roster/architecture sections when something structural changes). Tools: Read, Grep, Glob, Bash, Edit. Should be invoked at session end or after significant decisions.
+- **Coordinator/"director" role**: not a separate subagent. Only the main Claude Code session can dispatch to subagents (subagents can't call the Agent tool themselves), so the main session acts as coordinator - dispatching to the three agents above, relaying user input, and verifying answers. Revisit this if the user wants a distinct QA/verifier subagent instead.
+- More agents pending - user has indicated there are additional ones to define.
 
 ## Addon internal architecture (design-in-progress)
 
@@ -21,3 +25,10 @@ _Not yet decided. Placeholder — the addon is expected to split responsibilitie
 - User's plan: build a NinjaScript v8 addon; wants both (a) a team of Claude Code subagents to help develop it, and (b) the addon itself to have an internal multi-agent architecture.
 - Created `CLAUDE.md` and this `MEMORY.md` for cross-session continuity, per user request.
 - Next: user will supply agent skills/roles one at a time for the dev-team subagents; then scaffold the actual NinjaScript project structure.
+
+### 2026-07-23
+- Created first three dev-team subagents in `.claude/agents/`: `nt8-researcher`, `compile-error-fixer`, `session-logger` (see Agent roster section above for details).
+- User originally described nt8-researcher and compile-error-fixer identically; split them by scope (general research vs. specific compiler-error diagnosis+fix) since the user approved building both.
+- User also described a 4th "director" role (coordinates the team, verifies answers, takes input from the user). Decided this is the main session's job, not a subagent, since subagents here can't dispatch other subagents - documented as the Coordinator entry above. Not yet explicitly confirmed by the user; revisit if they want a dedicated QA/verifier subagent instead.
+- User has more agents to define; expect this roster to grow.
+- Next: await further agent definitions from the user; still no NinjaScript project scaffold yet.
